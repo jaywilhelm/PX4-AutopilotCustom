@@ -1,0 +1,5 @@
+menuconfig EXAMPLES_CUSTOM
+	bool "custom"
+	default y
+	---help---
+		Enable support for custom

@@ -1,0 +1,12 @@
+cp common.xml src/modules/mavlink/mavlink/message_definitions/v1.0/common.xml
+python3 \
+src/modules/mavlink/mavlink/pymavlink/tools/mavgen.py \
+--lang C --wire-protocol 2.0 \
+--exit-code \
+--output build/px4_sitl_default/mavlink \
+src/modules/mavlink/mavlink/message_definitions/v1.0/common.xml 
+
+#> testmavlink/output.log
+
+#--output src/modules/mavlink\
+#src/modules/mavlink/mavlink/message_definitions/v1.0/common.xml
