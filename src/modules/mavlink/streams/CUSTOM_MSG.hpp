@@ -35,7 +35,7 @@
 #define CUSTOM_MSG_HPP
 
 #include <uORB/topics/custom_msg.h>
-
+//This is almost cookie cutter stuff to deal with uORB to Mavlink
 class MavlinkStreamCustomMsg : public MavlinkStream
 {
 public:
@@ -60,6 +60,7 @@ private:
 	uORB::Subscription _custom_msg_sub{ORB_ID(custom_msg)};
 	bool send() override
 	{
+		//this gets called if a uORB message is found
 		bool sent = false;
 		custom_msg_s umsg;
 		while ((_mavlink->get_free_tx_buf() >= get_size()) &&_custom_msg_sub.update(&umsg)) {

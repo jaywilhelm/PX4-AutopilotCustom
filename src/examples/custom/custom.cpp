@@ -32,14 +32,14 @@ extern "C" __EXPORT int custom_main(int argc, char *argv[]);
 int custom_main(int argc, char *argv[])
 {
 	PX4_INFO("Hello Sky!");
-
+	//uORB message subscription setup
 	int att_sub_fd = orb_subscribe(ORB_ID(vehicle_attitude));
 	int angv_sub_fd = orb_subscribe(ORB_ID(vehicle_angular_velocity));
 	orb_set_interval(att_sub_fd, 100);
-
+	
 	int vlp_sub_fd = orb_subscribe(ORB_ID(vehicle_local_position));
 	orb_set_interval(vlp_sub_fd, 100);
-
+	//polling list for uORB messages we want
 	px4_pollfd_struct_t fds[] = {
 		//{ .fd = 0, .events = POLLIN},
 		{ .fd = att_sub_fd,	.events = POLLIN },
@@ -57,7 +57,7 @@ int custom_main(int argc, char *argv[])
 
 	PX4_INFO("START");
 	int error_counter = 0;
-
+	//not sure if this works
 	/*for(int i=0;i<1000;i++)
 	{
 		uint64_t timestamp_us = hrt_absolute_time();
@@ -69,7 +69,9 @@ int custom_main(int argc, char *argv[])
 		am_msg.control[3] = 0.99f;
 		orb_publish(ORB_ID(actuator_motors), am_ad, &am_msg);
 	}*/
+	//just run this 25 times, could be made into a service or run forever
 	for (int i = 0; i < 25; i++) {
+		//send the custom mavlink message
 		uint64_t timestamp_us = hrt_absolute_time();
 		cmsg.timestamp = timestamp_us;
 		cmsg.value = 42;
@@ -87,6 +89,7 @@ int custom_main(int argc, char *argv[])
 			error_counter++;
 		} else
 		{
+			//Got the Attitude + Angular Velocity data
 			if(fds[0].revents & POLLIN) {
 				struct vehicle_attitude_s vehicle_attitude;
 				orb_copy(ORB_ID(vehicle_attitude), att_sub_fd, &vehicle_attitude);
@@ -102,6 +105,7 @@ int custom_main(int argc, char *argv[])
 					(double)angular_velocity.xyz[1],
 					(double)angular_velocity.xyz[2]);
 			}
+			//Got the Vehicle Position - local + acclerations + velocties
 			if(fds[1].revents & POLLIN) {
 				struct vehicle_local_position_s vlp;
 				orb_copy(ORB_ID(vehicle_local_position), vlp_sub_fd, &vlp);
